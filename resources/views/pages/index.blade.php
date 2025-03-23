@@ -5,12 +5,12 @@
 @section('main')
     <section class="flex items-center gap-10">
         <div class="bg-matcha py-5 px-8">
-            <h2 class="text-white font-medium">Pemasukan bulan januari</h2>
-            <p class="text-white text-center text-2xl font-bold py-8">Rp3.000.000</p>
+            <h2 class="text-white font-medium">Total Pemasukan</h2>
+            <p class="text-white text-center text-2xl font-bold py-8">{{ formatRupiah($total_pemasukan) }}</p>
         </div>
         <div class="bg-heart py-5 px-8">
-            <h2 class="text-white font-medium">Pengeluaran bulan januari</h2>
-            <p class="text-white text-center text-2xl font-bold py-8">Rp1.000.000</p>
+            <h2 class="text-white font-medium">Total Pengeluaran</h2>
+            <p class="text-white text-center text-2xl font-bold py-8">{{ formatRupiah($total_pengeluaran) }}</p>
         </div>
     </section>
 
@@ -24,18 +24,36 @@
                     </div>
                 </div>
             </div>
-            @for ($i = 0; $i < 5; $i++)
+            @php
+                function formatRupiah($jumlah) {
+                    return 'Rp' . number_format($jumlah, 0, ',', '.');
+                }
+                
+                function getIcon($jenis) {
+                    if ($jenis == 'pemasukan') {
+                        return asset('assets/icons/download.svg');
+                    } else {
+                        return asset('assets/icons/upload.svg');
+                    }
+                }
+
+                $color = [
+                    'pemasukan' => 'text-matcha',
+                    'pengeluaran' => 'text-heart'
+                ];
+            @endphp
+            @foreach ($transaksi as $item)
                 <div class="bg-mist p-7 space-y-3">
                     <div class="flex flex-col gap-3 items-center justify-center">
                         <div class="bg-[#E5E5E5] rounded-full p-6 aspect-square">
-                            <img src="{{ asset('assets/icons/download.svg') }}" alt="" class="size-6">
+                            <img src="{{ getIcon($item->jenis) }}" alt="" class="size-6">
                         </div>
-                        <p class="text-matcha font-medium">+Rp200.000</p>
-                        <p>Gaji Bulan Maret</p>
+                        <p class="{{ $color[$item->jenis] }} font-medium">{{ formatRupiah($item->jumlah) }}</p>
+                        <p>{{ $item->keterangan }}</p>
                     </div>
-                    <p class="text-xs font-light">28 Maret 2025, pukul 20:00</p>
+                    <p class="text-xs font-light">{{ Carbon\Carbon::parse($item->created_at)->format('d M Y, H:i') }}</p>
                 </div>
-            @endfor
+            @endforeach
         </div>
     </section>
 @endsection

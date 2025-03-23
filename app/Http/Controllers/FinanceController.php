@@ -14,7 +14,15 @@ class FinanceController extends Controller
      */
     public function index()
     {
-        return view('pages.index');
+        $transaksi = Transaksi::latest()->get();
+        $total_pemasukan = Transaksi::where('jenis', 'pemasukan')->sum('jumlah');
+        $total_pengeluaran = Transaksi::where('jenis', 'pengeluaran')->sum('jumlah');
+
+        return view('pages.index', [
+            'transaksi' => $transaksi,
+            'total_pemasukan' => $total_pemasukan,
+            'total_pengeluaran' => $total_pengeluaran,
+        ]);
     }
 
     /**
@@ -34,7 +42,7 @@ class FinanceController extends Controller
             'jumlah' => $request->validated('jumlah'),
             'keterangan' => $request->validated('keterangan'),
             'jenis' => $request->validated('jenis'),
-            'user_id' => '9e71ea3a-481c-46d1-acb1-6892d7b98dc0',
+            'user_id' => '9e7fb451-5cfe-432f-ac76-ccf2039f40b9',
             // 'user_id' => auth()->user()->id,
         ]);
 
